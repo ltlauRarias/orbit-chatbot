@@ -1,0 +1,193 @@
+/* ==========================================================================
+   Orbit - visual theme (dark nebula, lavender and cream accents)
+   Loaded by app.py. Selectors use Streamlit's data-testid attributes.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,700&display=swap');
+
+:root {
+  --orbit-text: #efeaff;
+  --orbit-muted: #bdb4e0;
+  --orbit-cream: #fbe7cf;
+  --orbit-violet: #a78bfa;
+  --orbit-line: rgba(179, 157, 255, 0.38);
+  --orbit-panel: rgba(18, 13, 54, 0.80);
+  --orbit-user: rgba(24, 42, 96, 0.80);        /* blue-ish panel: the user */
+  --orbit-bot: rgba(54, 32, 108, 0.80);        /* violet panel: Orbit */
+  --orbit-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+}
+
+/* ---------- background: nebula image with a soft dark veil (keeps text readable) ---------- */
+.stApp {
+  background:
+    linear-gradient(rgba(8, 6, 28, 0.30), rgba(8, 6, 28, 0.58)),
+    url("/app/static/bg.webp") center top / cover no-repeat fixed;
+  background-color: #0b0820;                   /* fallback if the image cannot be loaded */
+  color: var(--orbit-text);
+}
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stHeader"],
+[data-testid="stBottom"],
+[data-testid="stBottom"] > div,
+[data-testid="stBottomBlockContainer"] {
+  background: transparent !important;
+}
+[data-testid="stDecoration"] { display: none; }
+[data-testid="stMainBlockContainer"] { max-width: 880px; padding-top: 3rem; }
+
+/* ---------- sidebar ---------- */
+[data-testid="stSidebar"],
+[data-testid="stSidebarContent"] {
+  background: rgba(12, 9, 38, 0.88) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+[data-testid="stSidebar"] { border-right: 1px solid var(--orbit-line); }
+[data-testid="stLogoLink"] img,
+[data-testid="stSidebarHeader"] img {
+  filter: drop-shadow(0 0 8px rgba(190, 160, 255, 0.65));
+}
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+  font-family: var(--orbit-serif);
+  font-style: italic;
+  font-weight: 700;
+  color: var(--orbit-cream);
+  letter-spacing: 0.01em;
+}
+[data-testid="stSidebar"] hr { border-color: var(--orbit-line); }
+
+/* ---------- title and tagline (inside a translucent panel so the background art never hurts legibility) ---------- */
+.st-key-hero {
+  background: rgba(10, 7, 34, 0.66);
+  border: 1px solid var(--orbit-line);
+  border-radius: 22px;
+  padding: 0.9rem 1.5rem 0.8rem;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  box-shadow: 0 6px 26px rgba(8, 4, 36, 0.5);
+}
+.st-key-hero h1 { padding-top: 0.2rem; padding-bottom: 0.2rem; }
+[data-testid="stMainBlockContainer"] h1 {
+  font-family: var(--orbit-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 2.9rem;
+  line-height: 1.1;
+  color: var(--orbit-cream);
+  text-shadow: 0 0 22px rgba(167, 139, 250, 0.65), 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+[data-testid="stMainBlockContainer"] [data-testid="stCaptionContainer"] {
+  color: var(--orbit-muted);
+  font-style: italic;
+  font-size: 1.02rem;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- disclaimer box ---------- */
+[data-testid="stAlert"] {
+  background: rgba(20, 14, 62, 0.86) !important;
+  border: 1.5px solid rgba(190, 160, 255, 0.55);
+  border-radius: 18px;
+  box-shadow: 0 0 22px rgba(130, 90, 240, 0.22);
+}
+[data-testid="stAlert"] *,
+[data-testid="stAlertContainer"] * { color: var(--orbit-text) !important; }
+
+/* ---------- chat messages: different tint for the user and for Orbit ---------- */
+[data-testid="stChatMessage"] {
+  background: var(--orbit-panel) !important;
+  border: 1px solid var(--orbit-line);
+  border-radius: 20px;
+  padding: 14px 18px;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 6px 26px rgba(8, 4, 36, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
+  background: var(--orbit-user) !important;
+  border-color: rgba(126, 170, 255, 0.45);
+}
+[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) {
+  background: var(--orbit-bot) !important;
+  border-color: rgba(190, 160, 255, 0.55);
+}
+[data-testid="stChatMessage"] img {
+  border-radius: 50%;
+  filter: drop-shadow(0 0 7px rgba(167, 139, 250, 0.7));
+}
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] li { color: var(--orbit-text); line-height: 1.6; }
+[data-testid="stChatMessage"] a { color: #d9c9ff; text-decoration-color: rgba(217, 201, 255, 0.55); }
+[data-testid="stChatMessage"] a:hover { color: #ffffff; }
+
+/* ---------- chat input (pill) ---------- */
+[data-testid="stChatInput"] {
+  border-radius: 999px;
+  border: 1.5px solid rgba(190, 160, 255, 0.65);
+  background: rgba(14, 10, 42, 0.92) !important;
+  box-shadow: 0 0 26px rgba(140, 100, 250, 0.28);
+  overflow: hidden;
+}
+[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] textarea {
+  background: transparent !important;
+  color: var(--orbit-text) !important;
+}
+[data-testid="stChatInputSubmitButton"] {
+  background: #7c5cf0 !important;
+  color: #ffffff !important;
+  border-radius: 50%;
+}
+[data-testid="stChatInputSubmitButton"]:hover { background: #937af5 !important; }
+
+/* ---------- sidebar expanders and buttons ---------- */
+[data-testid="stExpander"] {
+  background: rgba(34, 22, 90, 0.6);
+  border: 1px solid var(--orbit-line);
+  border-radius: 14px;
+}
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary * { color: var(--orbit-text); }
+
+[data-testid="stSidebar"] [data-testid="stButton"] button {
+  background: rgba(34, 24, 92, 0.72);
+  border: 1px solid var(--orbit-line);
+  border-radius: 14px;
+  color: var(--orbit-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button p::before {
+  content: "\2726  ";                           /* four-pointed star */
+  color: var(--orbit-cream);
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button:hover {
+  border-color: #d9c9ff;
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.5);
+  transform: translateY(-1px);
+}
+[data-testid="stLinkButton"] a { border-radius: 14px; }
+
+/* feedback thumbs: slightly brighter so they are easy to see */
+[data-testid="stFeedback"] button { color: var(--orbit-muted); }
+
+/* ---------- accessibility: clear keyboard focus ---------- */
+button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--orbit-cream) !important;
+  outline-offset: 2px;
+}
+
+/* ---------- scrollbars ---------- */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.45); border-radius: 8px; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 768px) {
+  [data-testid="stMainBlockContainer"] h1 { font-size: 2.1rem; }
+  .stApp { background-position: 30% top; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

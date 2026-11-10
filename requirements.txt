@@ -1,0 +1,14 @@
+# Orbit - dependencies (versions tested locally on Python 3.11).
+# Used both for local installs and by Streamlit Community Cloud.
+#
+# The next line makes pip look for the CPU-only build of PyTorch (hundreds of MB lighter than the default
+# build, which also downloads GPU libraries that a free cloud machine cannot use).
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+streamlit==1.67.0
+torch==2.14.1
+transformers==5.20.1
+sentence-transformers==6.1.0
+chromadb==1.5.9
+pyyaml==6.0.3
+numpy==1.26.4

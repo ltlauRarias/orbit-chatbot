@@ -1,0 +1,245 @@
+# ===================== Orbit configuration =====================
+paths:
+  raw_dir: data/raw                  # downloaded and cleaned source documents
+  chroma_dir: data/chroma            # persistent vector store
+  logs_dir: logs                     # anonymous JSONL logs
+  profile_file: data/profiles.json   # lightweight user preferences (no personal data)
+
+http:
+  # Wikipedia asks for an identifiable User-Agent.
+  user_agent: "OrbitChatbot/1.0 (university course project)"
+
+models:
+  llm_name: Qwen/Qwen2.5-1.5B-Instruct
+  embedding_name: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  device: auto               # "auto" = GPU if usable, otherwise CPU. Use "cpu" to force CPU
+  llm_dtype: auto            # "auto" = float16 on GPU, float32 on CPU. Other options: float16, bfloat16, float32
+
+generation:
+  max_new_tokens: 350        # upper bound of the answer length (in tokens)
+  temperature: 0.2           # low = more deterministic, fewer inventions
+  top_p: 0.9                 # nucleus sampling
+  repetition_penalty: 1.05   # discourages loops that small models sometimes fall into
+  max_answer_chars: 1800     # post-processing limit (not applied to quizzes)
+
+retrieval:
+  collection_name: orbit_kb
+  top_k: 4                   # number of chunks retrieved per question
+  min_similarity: 0.40       # cosine similarity threshold (calibrate later)
+  max_context_chars: 3500    # budget for the retrieved context inside the prompt
+
+chunking:
+  chunk_size_tokens: 110     # must be < embedding model max_seq_length
+  chunk_overlap_tokens: 20   # overlap so ideas are not cut at chunk borders
+  min_chunk_tokens: 12       # tiny fragments are discarded
+
+memory:
+  max_turns: 4               # short-term memory window (user/assistant exchanges)
+  max_history_chars: 1500    # character budget for the history inside the prompt
+  rewrite_followups: true    # rewrite short follow-ups as standalone queries
+
+personalization:
+  enabled: true              # remember simple preferences (e.g. likes simple explanations)
+
+input:
+  max_input_chars: 600       # longer inputs are truncated
+
+sources:
+  # ---------- Core sources (hand-curated) ----------
+  - id: nasa_facts
+    title: "Solar System: Facts"
+    publisher: NASA Science
+    type: web
+    url: https://science.nasa.gov/solar-system/solar-system-facts/
+    license: "NASA content: generally public domain"
+  - id: nasa_exploration
+    title: "Solar System Exploration"
+    publisher: NASA Science
+    type: web
+    url: https://science.nasa.gov/solar-system/
+    license: "NASA content: generally public domain"
+  - id: wikipedia_es_sistema_solar
+    title: "Sistema solar"
+    publisher: Wikipedia
+    type: wikipedia
+    lang: es
+    page: Sistema_solar
+    url: https://es.wikipedia.org/wiki/Sistema_solar
+    license: "CC BY-SA 4.0"
+  - id: nasa_sun
+    title: "The Sun"
+    publisher: NASA Science
+    type: web
+    url: https://science.nasa.gov/sun/
+    license: "NASA content: generally public domain"
+  - id: nasa_exploration_overview
+    title: "Exploration"                    
+    publisher: NASA Science
+    type: web
+    url: https://science.nasa.gov/solar-system/exploration/
+    license: "NASA content: generally public domain"
+  - id: nasa_planetary_missions
+    title: "Planetary Missions"               
+    publisher: NASA
+    type: web
+    url: https://www.nasa.gov/planetarymissions/
+    license: "NASA content: generally public domain"
+  - id: nasa_sep_program
+    title: "Solar System Exploration Program" 
+    publisher: NASA
+    type: web
+    url: https://www.nasa.gov/planetarymissions/solar-system-exploration-program/
+    license: "NASA content: generally public domain"
+  - id: nssdc_chronology
+    title: "Chronology of Lunar and Planetary Exploration"  
+    publisher: NASA NSSDC
+    type: web
+    parser: nssdc_timeline
+    url: https://nssdc.gsfc.nasa.gov/planetary/chronology.html
+    license: "NASA content: generally public domain"
+
+# ---------- Mission pages (curated from NASA's "A to Z list of missions") ----------
+mission_pages:
+  # Moon and crewed flight
+  - {name: "Apollo Program", url: "https://www.nasa.gov/the-apollo-program/"}
+  - {name: "Apollo 11", url: "https://www.nasa.gov/mission/apollo-11/"}
+  - {name: "Apollo 13", url: "https://www.nasa.gov/mission/apollo-13/"}
+  - {name: "Apollo 17", url: "https://www.nasa.gov/mission/apollo-17/"}
+  - {name: "Artemis", url: "https://www.nasa.gov/humans-in-space/artemis/"}
+  - {name: "Artemis I", url: "https://www.nasa.gov/mission/artemis-i/"}
+  - {name: "Artemis II", url: "https://www.nasa.gov/mission/artemis-ii/"}
+  - {name: "Project Mercury", url: "https://www.nasa.gov/project-mercury/"}
+  - {name: "International Space Station", url: "https://www.nasa.gov/international-space-station/"}
+  - {name: "Lunar Reconnaissance Orbiter (LRO)", url: "https://science.nasa.gov/mission/lro/"}
+  - {name: "GRAIL", url: "https://science.nasa.gov/mission/grail/"}
+  # Outer planets and beyond
+  - {name: "Voyager Program", url: "https://www.nasa.gov/mission/voyager-1-and-2/"}
+  - {name: "Voyager 1", url: "https://science.nasa.gov/mission/voyager-1/"}
+  - {name: "Voyager 2", url: "https://science.nasa.gov/mission/voyager-2/"}
+  - {name: "Pioneer 10", url: "https://science.nasa.gov/mission/pioneer-10/"}
+  - {name: "Pioneer 11", url: "https://science.nasa.gov/mission/pioneer-11/"}
+  - {name: "Galileo", url: "https://science.nasa.gov/mission/galileo/"}
+  - {name: "Cassini-Huygens", url: "https://science.nasa.gov/mission/cassini/"}
+  - {name: "Juno", url: "https://science.nasa.gov/mission/juno/"}
+  - {name: "New Horizons", url: "https://science.nasa.gov/mission/new-horizons/"}
+  - {name: "Europa Clipper", url: "https://science.nasa.gov/mission/europa-clipper/"}
+  # Mars
+  - {name: "Viking 1", url: "https://science.nasa.gov/mission/viking-1/"}
+  - {name: "Mars Pathfinder", url: "https://science.nasa.gov/mission/mars-pathfinder/"}
+  - {name: "Spirit (Mars Exploration Rover)", url: "https://science.nasa.gov/mission/mer-spirit/"}
+  - {name: "Opportunity (Mars Exploration Rover)", url: "https://science.nasa.gov/mission/mer-opportunity/"}
+  - {name: "Curiosity (MSL)", url: "https://science.nasa.gov/mission/msl-curiosity/"}
+  - {name: "Mars 2020 Perseverance Rover", url: "https://science.nasa.gov/mission/mars-2020-perseverance/"}
+  - {name: "InSight", url: "https://science.nasa.gov/mission/insight/"}
+  - {name: "MAVEN", url: "https://science.nasa.gov/mission/maven/"}
+  - {name: "Mars Reconnaissance Orbiter", url: "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/"}
+  # Mercury, Venus and the Sun
+  - {name: "Mariner 10", url: "https://science.nasa.gov/mission/mariner-10/"}
+  - {name: "MESSENGER", url: "https://science.nasa.gov/mission/messenger/"}
+  - {name: "Magellan", url: "https://science.nasa.gov/mission/magellan/"}
+  - {name: "Parker Solar Probe", url: "https://science.nasa.gov/mission/parker-solar-probe/"}
+  - {name: "SOHO", url: "https://science.nasa.gov/mission/soho/"}
+  - {name: "Solar Dynamics Observatory (SDO)", url: "https://science.nasa.gov/mission/sdo/"}
+  # Asteroids and comets
+  - {name: "DART", url: "https://science.nasa.gov/mission/dart/"}
+  - {name: "OSIRIS-REx", url: "https://science.nasa.gov/mission/osiris-rex/"}
+  - {name: "Dawn", url: "https://science.nasa.gov/mission/dawn/"}
+  - {name: "Lucy", url: "https://science.nasa.gov/mission/lucy/"}
+  - {name: "Psyche", url: "https://science.nasa.gov/mission/psyche/"}
+  - {name: "Rosetta-Philae", url: "https://science.nasa.gov/mission/rosetta-philae/"}
+  - {name: "Stardust", url: "https://science.nasa.gov/mission/stardust/"}
+  - {name: "Deep Impact", url: "https://science.nasa.gov/mission/deep-impact-epoxi/"}
+  # Telescopes and exoplanets
+  - {name: "Hubble Space Telescope", url: "https://science.nasa.gov/mission/hubble/"}
+  - {name: "James Webb Space Telescope", url: "https://science.nasa.gov/mission/webb/"}
+  - {name: "Kepler", url: "https://science.nasa.gov/mission/kepler/"}
+  - {name: "TESS", url: "https://science.nasa.gov/mission/tess/"}
+
+
+# ===================== User interface (used by app.py) =====================
+# Every text shown in the web interface lives here, in Spanish and English, so it can be edited without touching the code.
+ui:
+  page_icon: "🪐"
+  default_language: es                 # "es" or "en"
+  feedback_form_url: ""                # paste the link of your feedback form (Google Forms) here; empty = button hidden
+  show_technical_details: false        # true = show outcome, similarity and response time under each answer
+
+  es:
+    language_name: "Español"
+    title: "Orbit: tu guía del Sistema Solar y las misiones espaciales"
+    tagline: "Pregúntame sobre planetas, lunas, asteroides y misiones como Apolo, Artemis o Voyager."
+    welcome: "¡Hola! Soy **Orbit**. Puedo responder preguntas sobre el Sistema Solar y las misiones espaciales usando páginas de NASA y Wikipedia, y te muestro las fuentes. Prueba con uno de los ejemplos de la barra lateral o escribe tu pregunta."
+    disclaimer: "⚠️ Orbit es un prototipo académico que usa un modelo de lenguaje pequeño: puede cometer errores o inventar datos. Verifica la información importante en las fuentes que aparecen debajo de cada respuesta."
+    input_placeholder: "Escribe tu pregunta sobre el espacio…"
+    thinking: "Orbit está buscando en su base de conocimiento… en un equipo sin GPU puede tardar hasta un minuto."
+    error: "Ocurrió un error inesperado al generar la respuesta. Intenta de nuevo o reformula la pregunta."
+    new_chat: "🗑️ Nueva conversación"
+    about_header: "Acerca de Orbit"
+    capabilities_header: "✅ Qué puede hacer"
+    capabilities:
+      - "Responder preguntas sobre el Sistema Solar y cerca de 50 misiones espaciales (Apolo, Artemis, Voyager, rovers de Marte, Hubble, Webb y más)."
+      - "Mostrar las fuentes de cada respuesta."
+      - "Recordar las últimas preguntas de la conversación para entender seguimientos como «¿y cuál es el más grande?»."
+      - "Explicar como a un niño («explícamelo como si tuviera 10 años»), comparar cuerpos o misiones («compara Marte y Venus») y hacer un mini quiz («hazme un quiz sobre…»)."
+      - "Responder en español o inglés, según el idioma de tu pregunta."
+    limitations_header: "⛔ Qué NO puede hacer"
+    limitations:
+      - "No da datos en tiempo real (por ejemplo, dónde está una nave ahora mismo)."
+      - "Solo conoce las páginas de NASA y Wikipedia que se cargaron; algunas misiones y temas no están incluidos."
+      - "Al ser un modelo pequeño, puede equivocarse aunque cite fuentes; el quiz puede salir sin respuestas o con preguntas poco precisas."
+      - "Cuando no encuentra información fiable, lo dice en lugar de inventar."
+      - "En equipos sin GPU puede tardar entre 30 y 60 segundos en responder."
+    privacy_header: "🔒 Privacidad"
+    privacy: "No se piden datos personales. Las conversaciones se guardan de forma anónima (con un identificador aleatorio) para mejorar el sistema; los correos y teléfonos se enmascaran."
+    examples_header: "💡 Prueba con estas preguntas"
+    examples:
+      - "¿Cuántos planetas hay en el sistema solar?"
+      - "¿Cuándo se lanzó Voyager 1?"
+      - "¿Qué descubrió el rover Curiosity en Marte?"
+      - "¿Qué es el telescopio espacial James Webb?"
+      - "¿Cómo se formó el sistema solar?"
+    feedback_header: "💬 Tu opinión"
+    feedback_help: "Usa 👍 / 👎 debajo de cada respuesta: tu voto se guarda de forma anónima y nos ayuda a mejorar."
+    feedback_thanks: "¡Gracias por tu opinión!"
+    feedback_button: "Responder el formulario de opinión"
+    technical_toggle: "Mostrar detalles técnicos"
+
+  en:
+    language_name: "English"
+    title: "Orbit: your guide to the Solar System and space missions"
+    tagline: "Ask me about planets, moons, asteroids and missions such as Apollo, Artemis or Voyager."
+    welcome: "Hi! I'm **Orbit**. I can answer questions about the Solar System and space missions using NASA and Wikipedia pages, and I show my sources. Try one of the examples in the sidebar or type your question."
+    disclaimer: "⚠️ Orbit is an academic prototype that uses a small language model: it can make mistakes or invent facts. Check important information in the sources shown below each answer."
+    input_placeholder: "Type your question about space…"
+    thinking: "Orbit is searching its knowledge base… on a machine without a GPU this can take up to a minute."
+    error: "An unexpected error occurred while generating the answer. Please try again or rephrase your question."
+    new_chat: "🗑️ New conversation"
+    about_header: "About Orbit"
+    capabilities_header: "✅ What it can do"
+    capabilities:
+      - "Answer questions about the Solar System and about 50 space missions (Apollo, Artemis, Voyager, Mars rovers, Hubble, Webb and more)."
+      - "Show the sources of every answer."
+      - "Remember the latest questions of the conversation to understand follow-ups such as “and which one is the biggest?”."
+      - "Explain like you are a child (“explain it like I'm 10”), compare bodies or missions (“compare Mars and Venus”) and run a mini quiz (“quiz me about…”)."
+      - "Answer in Spanish or English, matching the language of your question."
+    limitations_header: "⛔ What it can NOT do"
+    limitations:
+      - "It does not provide real-time data (for example, where a spacecraft is right now)."
+      - "It only knows the NASA and Wikipedia pages that were loaded; some missions and topics are not included."
+      - "Being a small model, it can be wrong even when it cites sources; the quiz may come without answers or with imprecise questions."
+      - "When it cannot find reliable information, it says so instead of inventing an answer."
+      - "On machines without a GPU it can take 30 to 60 seconds to answer."
+    privacy_header: "🔒 Privacy"
+    privacy: "No personal data is requested. Conversations are stored anonymously (with a random identifier) to improve the system; e-mails and phone numbers are masked."
+    examples_header: "💡 Try these questions"
+    examples:
+      - "How many planets are in the Solar System?"
+      - "When was Voyager 1 launched?"
+      - "What did the Curiosity rover discover on Mars?"
+      - "What is the James Webb Space Telescope?"
+      - "How did the Solar System form?"
+    feedback_header: "💬 Your opinion"
+    feedback_help: "Use 👍 / 👎 below each answer: your vote is stored anonymously and helps us improve."
+    feedback_thanks: "Thanks for your feedback!"
+    feedback_button: "Fill in the feedback form"
+    technical_toggle: "Show technical details"
