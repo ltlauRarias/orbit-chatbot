@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+logs/
+data/profiles.json
+.env
+.streamlit/secrets.toml
+*.zip
