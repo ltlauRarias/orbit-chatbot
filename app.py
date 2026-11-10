@@ -9,6 +9,7 @@ The chatbot itself (RAG pipeline, memory, safety rules, logging) lives in orbit_
 """
 import os
 import json
+import base64
 import time
 import datetime
 import threading
@@ -36,20 +37,29 @@ def load_image(name: str, fallback):
     return Image.open(path) if path else fallback
 
 
+@st.cache_resource
+def background_data_uri() -> str:
+    """The background image as a data URI, so it does not depend on the server's static-file feature
+    (some hosting platforms do not serve it). Computed once and cached."""
+    path = os.path.join(BASE_DIR, "static", "bg.webp")
+    if not os.path.exists(path):
+        return ""
+    with open(path, "rb") as f:
+        return "data:image/webp;base64," + base64.b64encode(f.read()).decode("ascii")
+
+
 def inject_css() -> None:
     """Apply the visual theme (assets/style.css) to the page."""
     path = asset_path("style.css")
     if path:
         with open(path, encoding="utf-8") as f:
             css = "\n".join(line for line in f.read().splitlines() if line.strip())
+        uri = background_data_uri()
+        if uri:
+            css = css.replace('url("/app/static/bg.webp")', f'url("{uri}")')
         st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
-# --------------------------------------------------------------------------------------------------
-# Cached resources: loaded ONCE per server process and shared by every browser session.
-# (Loading the language model takes a long time, so it must not be repeated on every interaction.)
-# --------------------------------------------------------------------------------------------------
-@st.cache_resource
 def get_config() -> dict:
     return load_config(CONFIG_PATH)
 
@@ -58,7 +68,7 @@ def get_config() -> dict:
 def get_bot():
     cfg = get_config()
     bot = load_chatbot(cfg)
-    lock = threading.Lock()            # the model answers one question at a time; other users wait their turn
+    lock = threading.Lock()           
     return bot, lock
 
 
