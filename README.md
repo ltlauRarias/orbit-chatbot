@@ -1,6 +1,6 @@
 # Orbit: A Chatbot About the Solar System and Space Missions
 
-Orbit is a conversational assistant that answers questions about the solar system and space missions, in both Spanish and English. It employs Retrieval-Augmented Generation (RAG) for each query: it retrieves the most relevant excerpts from a knowledge base—compiled from public NASA and Wikipedia pages—processes them using an open-source language model, and provides the sources for its answers.
+Orbit is a conversational assistant that answers questions about the solar system and space missions, in both Spanish and English. It employs Retrieval-Augmented Generation (RAG) for each query: it retrieves the most relevant excerpts from a knowledge base compiled from public NASA and Wikipedia pages processes them using an open-source language model, and provides the sources for its answers.
 
 The entire system is built using free, open-source technology:
 
