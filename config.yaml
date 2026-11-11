@@ -161,7 +161,7 @@ mission_pages:
 ui:
   page_icon: "🪐"
   default_language: es                 # "es" or "en"
-  feedback_form_url: ""                # paste the link of your feedback form (Google Forms) here; empty = button hidden
+  feedback_form_url: "https://forms.gle/nXGF7k8nkozAdY757"                
   show_technical_details: false        # true = show outcome, similarity and response time under each answer
 
   es:
