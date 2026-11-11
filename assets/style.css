@@ -170,7 +170,17 @@
 [data-testid="stLinkButton"] a { border-radius: 14px; }
 
 /* feedback thumbs: slightly brighter so they are easy to see */
-[data-testid="stFeedback"] button { color: var(--orbit-muted); }
+[data-testid="stFeedbackButton"] { color: var(--orbit-muted) !important; }
+[data-testid="stFeedbackButton"]:hover { color: var(--orbit-cream) !important; }
+/* the thumb the user pressed: clearly marked with a bright colour, a pill background and a ring */
+[data-testid="stFeedbackButtonActive"] {
+  color: var(--orbit-cream) !important;
+  background: rgba(167, 139, 250, 0.38) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 0 1.5px var(--orbit-violet), 0 0 12px rgba(167, 139, 250, 0.65);
+}
+[data-testid="stFeedbackButtonActive"] span,
+[data-testid="stFeedbackButtonActive"] svg { color: inherit; fill: currentColor; }
 
 /* ---------- accessibility: clear keyboard focus ---------- */
 button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible {
