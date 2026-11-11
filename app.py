@@ -60,6 +60,11 @@ def inject_css() -> None:
         st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
+# --------------------------------------------------------------------------------------------------
+# Cached resources: loaded ONCE per server process and shared by every browser session.
+# (Loading the language model takes a long time, so it must not be repeated on every interaction.)
+# --------------------------------------------------------------------------------------------------
+@st.cache_resource
 def get_config() -> dict:
     return load_config(CONFIG_PATH)
 
@@ -68,7 +73,7 @@ def get_config() -> dict:
 def get_bot():
     cfg = get_config()
     bot = load_chatbot(cfg)
-    lock = threading.Lock()           
+    lock = threading.Lock()            # the model answers one question at a time; other users wait their turn
     return bot, lock
 
 
@@ -111,6 +116,9 @@ def render_message(index: int, msg: dict, T: dict, show_details: bool) -> None:
                            f"similarity: {sim if sim is not None else '-'} · {meta.get('seconds', 0):.0f}s")
             if meta.get("outcome") == "answered" and hasattr(st, "feedback"):
                 st.feedback("thumbs", key=f"fb_{index}", on_change=save_feedback, args=(index,))
+                if st.session_state.get(f"fb_{index}") is not None:      # visible proof that the vote was registered
+                    saved_text = T.get("feedback_saved") or ("Vote saved" if st.session_state.get("lang") == "en" else "Voto registrado")
+                    st.caption("✓ " + saved_text)
 
 
 def reset_conversation() -> None:
@@ -199,6 +207,9 @@ if prompt:
                 with model_lock:
                     result = bot.ask(st.session_state.session, prompt)
                 seconds = time.time() - started
+            if ui.get("print_questions_to_console", True):               # shows in "Manage app" logs (masked, anonymous)
+                print(f"[Orbit] session={st.session_state.session.user_id} outcome={result['outcome']} "
+                      f"sim={result['top_similarity']} {seconds:.0f}s question={bot.logger.mask(prompt)!r}", flush=True)
             reply = {"role": "assistant", "content": result["answer"],
                      "meta": {"outcome": result["outcome"], "mode": result["mode"], "seconds": seconds,
                               "top_similarity": result["top_similarity"], "question": prompt}}
